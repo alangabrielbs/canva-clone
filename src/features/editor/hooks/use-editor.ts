@@ -1,5 +1,6 @@
+import { useAutoResize } from "@/features/editor/hooks/use-auto-resize";
 import { fabric } from "fabric";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 type InitParams = {
   initialCanvas: fabric.Canvas;
@@ -7,6 +8,14 @@ type InitParams = {
 };
 
 export const useEditor = () => {
+  const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
+
+  useAutoResize({
+    canvas,
+    container,
+  });
+
   const init = useCallback(
     ({ initialCanvas, initialContainer }: InitParams) => {
       fabric.Object.prototype.set({
@@ -20,8 +29,8 @@ export const useEditor = () => {
       });
 
       const initialWorkspace = new fabric.Rect({
-        width: 500,
-        height: 500,
+        width: 900,
+        height: 1200,
         name: "clip",
         fill: "white",
         selectable: false,
@@ -38,6 +47,9 @@ export const useEditor = () => {
       initialCanvas.add(initialWorkspace);
       initialCanvas.centerObject(initialWorkspace);
       initialCanvas.clipPath = initialWorkspace;
+
+      setCanvas(initialCanvas);
+      setContainer(initialContainer);
 
       const test = new fabric.Rect({
         width: 100,
